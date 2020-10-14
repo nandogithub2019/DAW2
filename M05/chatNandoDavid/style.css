@@ -1,0 +1,26 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.contenidor {
+    width: 96%;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: stretch;
+    flex-wrap: nowrap;
+    background-color: darkgray;
+}
+.formulari {
+    display: flex;
+    background-color: darkgray;
+    align-items: center;
+    padding: 20px;
+}
+.chat {
+    display: flex;
+    background-color: darkgray;
+    padding: 20px;
+}
