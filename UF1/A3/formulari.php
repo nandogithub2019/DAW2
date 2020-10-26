@@ -27,14 +27,16 @@
         
             
             $dir_subida = 'imatges/';
-            $fichero_subido = $dir_subida . basename($_FILES['myfile']['name']);
-            if (move_uploaded_file($_FILES['myfile']['tmp_name'], $fichero_subido)) {
-                
-                echo "<br><img width =\"200px\" src=\"".$fichero_subido."\"> ";
-            }else{
-                echo "ko";
+            foreach($_FILES["myfile"]['name'] as $key => $tmp_name)
+	        {
+                $fichero_subido = $dir_subida . basename($_FILES['myfile']['name'][$key]);
+                if (move_uploaded_file($_FILES['myfile']['tmp_name'][$key], $fichero_subido)) {
+                    
+                    echo "<br><img width =\"200px\" src=\"".$fichero_subido."\"> ";
+                }else{
+                    echo "ko";
+                }
             }
-     
 
     } else {
       
@@ -84,7 +86,7 @@
     <br /><br />
     
     <label for="file"></label>
-    <input type="file" name="myfile" id="myfile">
+    <input type="file" name="myfile[]" id="myfile[]" multiple ="">
 
     <button id="mysubmit" type="submit">Submit</button><br /><br />
 

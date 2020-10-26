@@ -1,0 +1,5 @@
+AuthUserFile /var/www/html/fcarrillo/javascript/.htpasswd
+AuthName DirectoriProtegit
+AuthType Basic
+Require user armand
+Require user fcarrillo
