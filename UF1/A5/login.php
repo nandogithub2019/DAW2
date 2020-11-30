@@ -55,7 +55,7 @@ if(isset($_REQUEST["submit"])){
 
   $pass = md5($_REQUEST['password']);
   //Consultes a la base de dades (SELECT)
-  $sql = "select password from usuaris where nom='".$_REQUEST["username"]."' and password='"."$pass"."' ";
+  $sql = "select password from usuaris where email='".$_REQUEST["email"]."' and password='"."$pass"."' ";
 
 /* mysqli_query nos permite ejecutar una sentencia sql,dando dos parametros
 la conexión y la sentencia que queremos ejecutar.
@@ -68,13 +68,13 @@ Esto nos da un resultado que lo tenemos que meter en una estructura
 
               if(isset($_REQUEST["recordar"]) && $_REQUEST["recordar"]==1){
                   setcookie("password",md5($_REQUEST['password']),time()+365*24*60*60);
-                  setcookie("nomusuari",$_REQUEST["username"],time()+365*24*60*60); 
-                  $_SESSION["nom"]=$_COOKIE["nomusuari"];
+                  setcookie("nomusuari",$_REQUEST["email"],time()+365*24*60*60); 
+                  $_SESSION["nom"]=$_COOKIE["email"];
                   
               }
           
             $_SESSION["validacioncorrecta"]=true;
-            $_SESSION["nom"]=$_REQUEST["username"];
+            $_SESSION["nom"]=$_REQUEST["email"];
             $_SESSION["password"]=$pass;
             // $_SESSION["pass"]=md5(sha1($_REQUEST["password"]));
 
@@ -126,7 +126,7 @@ if(isset($_REQUEST["alta"])){
             <h5 class="card-title text-center">Sign In</h5>
             <form method="post" class="form-signin">
               <div class="form-label-group">
-                <input type="text" id="" name="username" class="form-control" placeholder="Username">
+                <input type="text" id="" name="email" class="form-control" placeholder="Email">
                 <label for="inputName"></label>
               </div>
 

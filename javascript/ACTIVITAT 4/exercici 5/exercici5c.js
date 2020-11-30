@@ -22,26 +22,23 @@ for (i=1; i <= 13; i++){
 console.log(cartes);    
 }
 
+
 /* Funció que genera cartes aleatories */
 
 const aleatoria = () => {
-    
     var num = 0;   // variable que conté el valor aleatori
+    /* var numeros = []; */   // array amb els numeros aleatoris
     var imgs = document.querySelectorAll('img');// array de totes les etiquetes <img>
     /* Para cada <img>, construye la ruta de la imagen (str) a partir de
     un número aleatorio y la asigna mediante setAttribute. Guarda el número aleatorio en un array para posteriormente buscar coincidencias */   
     
     for (i= 0; i < imgs.length; i++){
         num = Math.floor(Math.random() * 52); 
-        if (coincidencies.indexOf(num) == -1){   // mira si num aparece en coincidencies[], si retorna -1 significa que no el troba, per tant, no està repetit 
-            coincidencies.push(num);
-            str = "poker/"+cartes[num];
-            imgs[i].setAttribute("src", str);
-        }else{
-            i--;
-        }
-    console.log(coincidencies);     
-    } 
+        str = "poker/"+cartes[num];
+        imgs[i].setAttribute("src", str);
+    }
+    
+  
 }
 /* document.getElementById('iniciar').innerHTML = "Aturar";
     document.getElementById('iniciar').setAttribute("id", "aturar"); */
@@ -52,23 +49,50 @@ const esborrar = () => {
         imgs[i].setAttribute("src", str);
     }
 }
+
+
 /* Obtiene el objeto a escuchar, en este caso es un boton con id = "iniciar" y "esborrar". Cuando detecta el evento onClick para el boton asignado, llama a la función.  */
 
-var botoIniciar = document.getElementById("iniciar");
+/* var botoIniciar = document.getElementById("iniciar");
 botoIniciar.addEventListener("click", function(event) {temps = setInterval( () => {aleatoria();} ,500);});
 
 var botoAturar = document.getElementById("aturar");
 botoAturar.addEventListener("click", function(event) {clearInterval(temps);});
 
 let botoEsborrar = document.getElementById("esborrar");
-botoEsborrar.addEventListener("click", function(event) {esborrar();});
+botoEsborrar.addEventListener("click", function(event) {esborrar();}); */
 
 
+var botonIniciar = document.getElementById("iniciar");
+botonIniciar.addEventListener("click", function(event) {
+    temps = setInterval( () => {
+        aleatoria();
+    } ,500);
+});
 
+var botonAturar = document.getElementById("aturar");
+botonAturar.addEventListener("click", function(event) {clearInterval(temps);});
+
+let botonEsborrar = document.getElementById("esborrar");
+botonEsborrar.addEventListener("click", function(event) {esborrar();});
      
    
 
-
+/* const aleatoria = () => {
+    var num = 0;   // variable que conté el valor aleatori
+    /* var numeros = []; */   // array amb els numeros aleatoris
+    //var imgs = document.querySelectorAll('img');// array de totes les etiquetes <img>
+    /* Para cada <img>, construye la ruta de la imagen (str) a partir de
+    un número aleatorio y la asigna mediante setAttribute. Guarda el número aleatorio en un array para posteriormente buscar coincidencias */   
+    
+    /* for (i= 0; i < imgs.length; i++){
+        num = Math.floor(Math.random() * 52); 
+        str = "poker/"+cartes[num];
+        imgs[i].setAttribute("src", str);
+    }
+    
+  
+} */ 
 
     
 

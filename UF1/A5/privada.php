@@ -7,7 +7,7 @@ y reirige a la pagina de inicio*/
 if(isset($_REQUEST["logout"])){
   session_destroy(); 
   setcookie("password",0,1);
-  setcookie("nomusuari",0,1);
+  setcookie("email",0,1);
   header('Location:login.php'); 
 }
 
@@ -27,7 +27,7 @@ if(isset($_SESSION["validacioncorrecta"])&& $_SESSION["validacioncorrecta"]==tru
     $_nombre=$_SESSION["nom"];
     
   } else{
-    $_nombre=$_COOKIE["nomusuari"];
+    $_nombre=$_COOKIE["email"];
     
   }   
 
@@ -69,7 +69,7 @@ if(isset($_SESSION["validacioncorrecta"])&& $_SESSION["validacioncorrecta"]==tru
       <li><a href="privada.php">Area Privada</a></li>
       
         <?php 
-          if($_nombre=="admin"){
+          if($_nombre=="admin@admin.com"){
         ?>
         <li><a href="usuarios.php">Gestión de usuarios</a></li>
         <?php 

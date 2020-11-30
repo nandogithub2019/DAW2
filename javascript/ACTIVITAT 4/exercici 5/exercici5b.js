@@ -25,7 +25,7 @@ console.log(cartes);
 
 const aleatoria = () => {
     var num = 0;   // variable que conté el valor aleatori
-    var numeros = [];   // array amb els numeros aleatoris
+    /* var numeros = []; */   // array amb els numeros aleatoris
     var imgs = document.querySelectorAll('img');// array de totes les etiquetes <img>
     /* Para cada <img>, construye la ruta de la imagen (str) a partir de
     un número aleatorio y la asigna mediante setAttribute. Guarda el número aleatorio en un array para posteriormente buscar coincidencias */   

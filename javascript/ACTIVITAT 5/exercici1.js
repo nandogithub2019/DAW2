@@ -1,3 +1,5 @@
+/* Funcions per crear i llegir cookies */
+
 function setCookie(camp, valor, dies) {
     var d = new Date();
     d.setTime(d.getTime() + (dies*24*60*60*1000));
@@ -22,13 +24,17 @@ function getCookie(nom) {
     return "";
 }
 
-var valor = 0;
-var cookie =  getCookie('contador');
-if (getCookie('contador')==""){
-    setCookie("contador", valor, 100);
-    document.getElementById('cont').innerHTML= "Visita num: "+contador;
-}else{
 
+var valor = 1;   // valor inicial de la cookie
+var cookie =  parseInt(getCookie('contador'));   /* Llegeix la cookie, la converteix a int
+i la guarda en una variable */
+if (getCookie('contador')==""){ /* En la primera visita crea la cookie amb valor "1" i la mostra*/
+    setCookie("contador", valor, 100);
+    document.getElementById('cont').innerHTML= "Benvingut, aquesta és la visita " + valor;
+}else{
+/* En les següents visites crea la mateixa cookie "contador" amb el valor incrementast en 1 */    
+    setCookie("contador", cookie+1 , 100);
+    document.getElementById('cont').innerHTML= "Benvingut, aquesta és la visita " + getCookie('contador');
 }
 
-/* document.getElementById('cont').innerHTML= "Visita num: "+contador; */
+
