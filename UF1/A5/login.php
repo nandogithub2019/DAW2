@@ -1,159 +1,136 @@
 <?php
-
+/* Inici de sessió i crida al fitxer que conté les funcions*/
 session_start();
-require("funcions.php");
-$error="";
-$pass ="";
 
-
-/* si existe la cookie del password comprueba 
-que sean correctas para mantener la sesión 
-aún cerrando el navegador*/
-if(isset($_COOKIE["password"])){    
-
-  $con = conexion();
-  // connectem amb la db
-  
-
-  
-  //Consultes a la base de dades (SELECT)
-  $sql = "select password from usuaris where nom='".$_COOKIE["nomusuari"]."' and password='".$_COOKIE["password"]."' ";
-
-
-  $resultat = mysqli_query($con,$sql) or die('Consulta fallida: ' . mysqli_error($con));
-  //convertim a array associatiu
-  
-          if($resultat->num_rows==1){
-            
-             
-          
-            $_SESSION["validacioncorrecta"]=true;
-            $_SESSION["nom"]=$_COOKIE["nomusuari"];
-            // $_SESSION["pass"]=md5(sha1($_REQUEST["password"]));
-
-              header('Location:privada.php');      
-              
-          }else{
-            setcookie("password",0,1);
-            setcookie("nomusuari",0,1);
-              $error="Usuario o contraseña incorrecta.";
-          }
-
-
-
-}         
-/*Al hacer submit crea variables de sesión cifrando el pass
-comprueba que coincidan con el cifrado. De esta manera
-las variables de sesión creadas se pueden utilizar en las
-diferentes páginas mientras no se cierre sesión.
-Si marcamos el check recordar, se crean variables de cookie
-para mantener la sesión abierta */
-if(isset($_REQUEST["submit"])){
-
-        
-  $con = conexion();
-
-  $pass = md5($_REQUEST['password']);
-  //Consultes a la base de dades (SELECT)
-  $sql = "select password from usuaris where email='".$_REQUEST["email"]."' and password='"."$pass"."' ";
-
-/* mysqli_query nos permite ejecutar una sentencia sql,dando dos parametros
-la conexión y la sentencia que queremos ejecutar.
-Esto nos da un resultado que lo tenemos que meter en una estructura
-*/ 
-  $resultat = mysqli_query($con,$sql) or die('Consulta fallida: ' . mysqli_error($con));
-  //convertim a array associatiu
-  
-          if($resultat->num_rows==1){
-
-              if(isset($_REQUEST["recordar"]) && $_REQUEST["recordar"]==1){
-                  setcookie("password",md5($_REQUEST['password']),time()+365*24*60*60);
-                  setcookie("nomusuari",$_REQUEST["email"],time()+365*24*60*60); 
-                  $_SESSION["nom"]=$_COOKIE["email"];
-                  
-              }
-          
-            $_SESSION["validacioncorrecta"]=true;
-            $_SESSION["nom"]=$_REQUEST["email"];
-            $_SESSION["password"]=$pass;
-            // $_SESSION["pass"]=md5(sha1($_REQUEST["password"]));
-
-              header('Location:privada.php');      
-          }else{
-              $error="Usuario o contraseña incorrecta.";
-          }
+require_once 'funcions.php';
+/* inicialització de variables que informaran dels possibles errors */
+$errorEmail = $errorPassword = $errorAcces = "";
+/* Variables que contindran les credencials d'accés */
+$password = $email = $conn = $result = $usuari = $id ="";
+/* Comprova si la política de cookies està acceptada i 
+redirecciona a la pàgina de politica de cookies en cas negatiu*/ 
+if (!$_COOKIE["politicacookies"]==1){
+    header('Location:politicaCookies.php');
 }
-# Redirige al formulario de alta si se pulsa dicho boton
-if(isset($_REQUEST["alta"])){
-    header('Location:alta.php');
+/* Comprova l'existencia de la cookie password i que el seu valor sigui correcte. Si es compleix aquesta condició redirigeix a l'àrea privada */
+if(isset($_COOKIE["password"])){    
+    // connectem amb la db
+    $conn = connectDB('localhost', 'fcarrillo', 'fcarrillo', 'fcarrillo_A5');
+    
+    // si existeix el email i el password en la base de dades accedeix al area privada
+    if(checkPasswordExist($_COOKIE["password"])){
+  
+    /* $resultat = mysqli_quer($conn,$sql) or die('Consulta fallida: ' . mysqli_error($conn)); */
+    //convertim a array associatiu
+    
+        $_SESSION["validacioncorrecta"]=true;
+        $_SESSION["nom"]=($_COOKIE['email']);
+        $_SESSION["id"]=getUserId($_REQUEST['email']);
+        // $_SESSION["pass"]=md5(sha1($_REQUEST["password"]));
+  
+        header('Location:areaPrivada.php');      
+                
+    }else{
+        setcookie("password",0,1);
+        setcookie("email",0,1);
+        $error="Usuario o contraseña incorrecta.";
+    }
+  
+} 
+
+// Comprova si es fa enviament per post
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+/* Comprova que els camps no estiguin vuits,
+sino estan vuits, la funcio test_input comprova que no hi hagin espais vuits ni caràcters especials per tal d'evitar atacs contra la base de dades. La funció test_email comprova que es format sigui correcte, el mateix que test_password */
+    if (empty($_POST["email"])){
+        
+        $errorEmail = "L'email és obligatori";
+    }else{    
+        
+        $email = test_input($_POST["email"]);
+        // check if e-mail address is well-formed
+        $errorEmail = test_email($email, $errorEmail);
+    }
+    if (empty($_POST["password"])){
+        $errorPassword = "El password és obligatori";
+    }else{
+        $password = test_input($_POST["password"]);
+        // check if name only contains letters and whitespace
+        $errorPassword = test_password($password, $errorPassword);
+    }
+    /* Si els camps estan omplerts i no hi han errors de format,
+    comprova que siguin els correctes. En cas afirmatiu crea una variable de sessió ($_SESSION["sesioActiva"] = true) per controlar l'accés al àrea privada*/        
+    if (!$errorEmail && !$errorPassword){
+        
+        $conn = connectDB('localhost', 'fcarrillo', 'fcarrillo', 'fcarrillo_A5');
+        
+        // si existeix el email i el password en la base de dades accedeix al area privada
+        $pass = md5($_REQUEST['password']);
+        if(checkEmailExist($_REQUEST['email']) && checkPasswordExist($pass)){
+
+            $usuari = getUserName($_REQUEST['email']);
+            $id= getUserId($_REQUEST['email']);
+
+            if(isset($_REQUEST['checkbox']) && $_REQUEST['checkbox']==1){
+                
+                setcookie("password",md5($_REQUEST['password']),time()+365*24*60*60);
+                setcookie("email",$_REQUEST["email"],time()+365*24*60*60); 
+                setcookie("nom",$usuari,time()+365*24*60*60); 
+                  /* $_SESSION["nom"]=$_COOKIE["email"]; */
+                  $_SESSION["nom"]=$usuari;
+                  $_SESSION["id"]=$id;
+                  $_SESSION["email"] = $_REQUEST['email'];
+
+            }else{
+            // Crea variables de sessió si el checkbox no està marcat
+            /* $_SESSION["nom"] = $_REQUEST["email"]; */
+            $_SESSION["nom"] = $usuari;
+            $_SESSION["validacioncorrecta"]=true;
+            $_SESSION["email"] = $_REQUEST['email'];
+            $_SESSION["id"]=$id;
+            }
+            
+            header('Location:areaPrivada.php');
+        }
+             
+                 
+    }
+      # Redirige al formulario de alta si se pulsa dicho boton
+      
+    if(isset($_REQUEST["alta"])){
+        header('Location:altausuari.php');
+    }
+    /* die("antes html!"); */
 }
 ?>
 
-<!--Estructura HTML usando Bootstrap -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Formulari Accés</title>
+    <style>.error {color: red;margin-left:5px;}</style>
+    </head>
+    <body>
+        <div style="margin: 30px 10%;">
+            <h3>Formulari Accés</h3>
+            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" id="myform" name="myform">
+                <label for="email"></label>
+                <input type="text" name="email"><span class="error"><?php echo $errorEmail;?></span><br>
+                <label for="password"></label>
+                <input type="text" name="password"><span class="error"><?php echo $errorPassword;?></span><br>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="">
-  <meta name="author" content="">
+                <p class="error"><?php echo $errorAcces;?></p>
 
-  <title></title>
-
-
-  <!-- Font Awesome Icons -->
-  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet">
-  <link href='https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic' rel='stylesheet' type='text/css'>
-
-  <!-- Plugin CSS -->
-  <link href="vendor/magnific-popup/magnific-popup.css" rel="stylesheet">
-
-  <!-- Theme CSS - Includes Bootstrap -->
-  <link href="css/creative.min.css" rel="stylesheet">
-  
-</head>
-<body>
-  
-<div class="container">
-    <div class="row">
-      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-        <div class="card card-signin my-5">
-          <div class="card-body">
-            <h5 class="card-title text-center">Sign In</h5>
-            <form method="post" class="form-signin">
-              <div class="form-label-group">
-                <input type="text" id="" name="email" class="form-control" placeholder="Email">
-                <label for="inputName"></label>
-              </div>
-
-              <div class="form-label-group">
-                <input type="password" id="" name="password" class="form-control" placeholder="Password">
-                <label for="inputPassword"></label>
-              </div>
-
-              <div class="custom-control custom-checkbox mb-3">
-                <input type="checkbox" class="custom-control-input" name="recordar" value="1" id="customCheck1">
-                <label class="custom-control-label" for="customCheck1">Remember password</label>
-              </div>
-              <input type="submit" name="submit" value="Enviar" class="btn btn-lg btn-success btn-block text-uppercase">
-              <br>
-              <input type="submit" name="alta" value="Alta" class="btn btn-lg btn-info btn-block text-uppercase">
-              <hr class="my-4">
-              <a href="recuperar_pass.php">¿Has olvidado la contraseña?</a>
+                <input type="checkbox" name="checkbox" value="1" /> Mantenir sessió<br /><br />
+                    
+                <button id="mysubmit" type="submit">Submit</button><br /><br />
+                <br><br>
+                <a id ="alta" href="altausuari.php">Alta Usuari</a>
+                <a href="recuperar_pass.php">¿Has olvidado la contraseña?</a>
             </form>
-          </div>
-          <div><?=$error?></div> 
         </div>
-      </div>
-    </div>
-  </div>
-  
-  
-</body>
-
-
+    </body>
 </html>
+
