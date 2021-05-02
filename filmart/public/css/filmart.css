@@ -1,0 +1,42 @@
+#logo {
+    color: white;
+}
+
+#film {
+    color: white;
+    font-size: 30px;
+    font-weight: bolder;
+}
+
+#mas {
+    color: #eddd53;
+}
+
+#art {
+    /* color: #2a7b9b; */
+    color: #2a7b9b;
+    font-size: 30px;
+}
+
+.navbarColor {
+    background-color: #c70039;
+}
+
+li .nav-item a:over {
+    color: #eddd53;
+}
+
+.social-icon {
+    color: white;
+}
+
+a .social-icon:over {
+    color: #eddd53;
+}
+
+.colorLogo {
+    color: #2a7b9b;
+}
+.colorLogo form {
+    color: #2a7b9b;
+}
